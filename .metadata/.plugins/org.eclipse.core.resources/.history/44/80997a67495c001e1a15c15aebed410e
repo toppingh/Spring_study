@@ -1,0 +1,78 @@
+package com.spring.board.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+
+import com.spring.board.entity.Board;
+import com.spring.board.service.BoardService;
+
+@Controller // django에서 view 처리와 비슷함!
+public class BoardController {
+	@Autowired
+	private BoardService boardService;
+	
+	@GetMapping("/board/write") // GetMapping 뒤에는 항상 url이 붙는다! 요청 url에 대한 Get 요청을 맵핑시키는 것. render 부분과 유사하다!
+	public String boardWriteForm() {
+		return "boardwrite"; // boardwrite html로 이동한다는 뜻!
+	}
+		
+	// form이 넘어가는지 확인하기
+	@PostMapping("/board/writepro")
+	public String boardWritePro(Board board, Model model) {
+//		System.out.println(board.getTitle()); // 제목 가져오기
+//		System.out.println(board.getContent()); // 내용 가져오기
+		boardService.write(board);
+		model.addAttribute("message", "글 작성이 완료되었습니다!"); // 메세지값과 searchUrl값을 message.html로 넘겨서 처리한다
+		model.addAttribute("searchUrl", "/board/list");
+		
+		return "message";
+	}
+	
+	// 전체
+	@GetMapping("/board/list")
+	public String boardList(Model model) {
+		model.addAttribute("list", boardService.boardList());
+		return "boardList";
+	}
+	
+	// 상세
+	@GetMapping("/board/view")
+	public String boardview(Model model, Integer id) {
+		model.addAttribute("board", boardService.boardView(id));
+		return "boardView";
+	}
+	
+	// 삭제
+	@GetMapping("/board/delete")
+	public String boardDelete(Integer id) {
+		boardService.boardDelete(id);
+		return "redirect:/board/list";
+	}
+	
+	@GetMapping("/board/modify/{id}")
+	public String boardModify(@PathVariable("id") Integer id, Model model) {
+		model.addAttribute("board", boardService.boardView(id));
+		return "boardmodify";
+	}
+	
+	@PostMapping("board/update/{id}")
+	public String boardUpdate(@PathVariable("id") Integer id, Board board, Model model) {
+		// 기존 객체를 불러옴
+		Board boardTemp = boardService.boardView(id);
+		
+		// 불러온 객체 위에 덮어쓰기 -> 수정했을 때 id값이 변하지 않기 위해서 덮어씌운다!
+		boardTemp.setTitle(board.getTitle());
+		boardTemp.setContent(board.getContent());
+		
+		boardService.write(boardTemp);
+		
+		model.addAttribute("message", "글 수정 완료");
+		model.addAttribute("searchUrl", "/board/list");
+		
+		return "message";
+	}
+}
