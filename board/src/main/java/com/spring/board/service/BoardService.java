@@ -1,7 +1,6 @@
 package com.spring.board.service;
 
 import java.io.File;
-import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,5 +65,20 @@ public class BoardService {
 	// 특정 게시물 삭제
 	public void boardDelete(Integer id) {
 		boardRepository.deleteById(id); // void인 이유 => 삭제이므로 반환할게 없음!
+	}
+	
+	// 좋아요
+	public void heartSave(Board board) {
+		boardRepository.save(board);
+	}
+	
+	// 조회수
+	public void boardViewCount(Integer id) {
+		Board board = boardRepository.findById(id).orElse(null);
+		
+		if (board != null) {
+			board.setViewCount(board.getViewCount() + 1);
+			boardRepository.save(board);
+		}
 	}
 }

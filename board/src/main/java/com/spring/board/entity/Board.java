@@ -27,6 +27,8 @@ public class Board { // 데이베이스의 테이블 이름 = Board
 	private String content;
 	private String filename;
 	private String filepath;
+	private Boolean heart; // 추가한 heart 컬럼 불러오기
+	private Integer viewCount; // 조회수
 	
 	// 추가
 	@CreationTimestamp
