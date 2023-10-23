@@ -38,7 +38,6 @@ public class Board { // 데이베이스의 테이블 이름 = Board
 	
 	@UpdateTimestamp
 	@Column(name = "modifyDate", nullable = false)
-//	@OrderBy("moidfyDate DESC")
 	private LocalDateTime modifyDate;
 	
 }
