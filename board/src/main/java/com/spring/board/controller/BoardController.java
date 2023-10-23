@@ -7,6 +7,7 @@ import java.nio.file.Paths;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -18,6 +19,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.spring.board.entity.Board;
@@ -48,7 +50,7 @@ public class BoardController {
 	
 	// 전체
 	@GetMapping("/board/list") // 페이징 추가 10/10
-	public String boardList(Model model, @PageableDefault(page = 0, size = 5, sort = "id", direction = Sort.Direction.DESC) Pageable pageable, String searchKeyword) {
+	public String boardList(Model model, @PageableDefault(page = 0, size = 5, sort = "id", direction = Sort.Direction.DESC) Pageable pageable, String searchKeyword, @RequestParam(name="sort", required=false) String sort) {
 //		model.addAttribute("list", boardService.boardList(pageable)); // boardList에 빨간줄 -> service에 등록을 안해서!
 		
 //		Page<Board> list = boardService.boardList(pageable);
@@ -56,11 +58,18 @@ public class BoardController {
 		Page<Board> list = null; // 검색을 하고 안하고의 차이가 있어서 null로 초기화 후 대입 하는 과정(밑에 조건문)
 		
 		if (searchKeyword == null) {
+			if ("latest".equals(sort)) {
+				pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by(Sort.Direction.DESC, "modifyDate"));
+			}
 			list = boardService.boardList(pageable);
 		} else {
+			if ("latest".equals(sort)) {
+				pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by(Sort.Direction.DESC, "modifyDate"));
+			}
 			list = boardService.boardSearchList(searchKeyword, pageable);
 		}
 		
+				
 		int nowPage = list.getPageable().getPageNumber() + 1;
 		int startPage = Math.max(nowPage - 4, 1); // 아무리 페이지가 많아봤자 4칸
 		int endPage = Math.min(nowPage + 5, list.getTotalPages()); // 아무리 페이지가 많아봤자 마지막 페이지 칸까지
@@ -147,5 +156,4 @@ public class BoardController {
     	boardService.heartSave(boardTemp);
     	return "redirect:/board/view?id={id}";
     }
-	
 }

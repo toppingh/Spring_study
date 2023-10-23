@@ -10,6 +10,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OrderBy;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -37,6 +38,7 @@ public class Board { // 데이베이스의 테이블 이름 = Board
 	
 	@UpdateTimestamp
 	@Column(name = "modifyDate", nullable = false)
+//	@OrderBy("moidfyDate DESC")
 	private LocalDateTime modifyDate;
 	
 }
