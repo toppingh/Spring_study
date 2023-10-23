@@ -77,14 +77,8 @@ public class BoardService {
 		Board board = boardRepository.findById(id).orElse(null);
 		
 		if (board != null) {
-			Integer viewCount = board.getViewCount();
-			
-			if (viewCount == null) {
-	            viewCount = 0;
-	        }
-			
-	        board.setViewCount(viewCount + 1);
-	        boardRepository.save(board);
+			board.setViewCount(board.getViewCount() + 1);
+			boardRepository.save(board);
 		}
 	}
 }
